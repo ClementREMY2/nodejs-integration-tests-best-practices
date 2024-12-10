@@ -27,7 +27,7 @@ jobs:
         node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
     - name: Install docker-compose
-      run: sudo apt-get install docker-compose
+      run: sudo apt-get update | sudo apt-get install docker-compose
       id: docker-compose
 
     - run: npm ci
