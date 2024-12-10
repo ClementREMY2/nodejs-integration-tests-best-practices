@@ -24,14 +24,10 @@ jobs:
       with:
         node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
-    - name: Create Docker Compose Installer Script
-      run: echo "sudo apt-get update && sudo apt-get install -y docker-compose" > install-docker-compose.sh
-
-    - name: Upload Docker Compose Installer Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: docker-compose-installer
-        path: install-docker-compose.sh
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
 
     - name: Cache Node.js modules
       uses: actions/cache@v3
@@ -45,17 +41,15 @@ jobs:
 
     - run: npm ci
 
-  test-unit:
+  test:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Download Docker Compose Installer Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-compose-installer
+    - name: Ensure Docker Compose is installed
+      run: docker-compose --version
 
     - name: Cache Node.js modules
       uses: actions/cache@v3
@@ -68,51 +62,5 @@ jobs:
           ${{ runner.os }}-node-
 
     - run: npm test
-
-  test-nestjs:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Download Docker Compose Installer Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-compose-installer
-
-    - name: Cache Node.js modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.npm
-          node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
     - run: npm run test:nestjs
-
-  test-mocha:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Download Docker Compose Installer Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-compose-installer
-
-    - name: Cache Node.js modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.npm
-          node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
     - run: npm run test:mocha
