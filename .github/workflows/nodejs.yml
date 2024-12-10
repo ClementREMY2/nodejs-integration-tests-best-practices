@@ -45,7 +45,7 @@ jobs:
 
     - run: npm ci
 
-  tests:
+  test-unit:
     needs: build
     runs-on: ubuntu-latest
 
@@ -56,9 +56,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: docker-compose-installer
-
-    - name: Install Docker Compose
-      run: bash install-docker-compose.sh
 
     - name: Cache Node.js modules
       uses: actions/cache@v3
@@ -71,5 +68,51 @@ jobs:
           ${{ runner.os }}-node-
 
     - run: npm test
+
+  test-nestjs:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download Docker Compose Installer Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: docker-compose-installer
+
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - run: npm run test:nestjs
+
+  test-mocha:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download Docker Compose Installer Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: docker-compose-installer
+
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - run: npm run test:mocha
