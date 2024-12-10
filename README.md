@@ -6,7 +6,7 @@
 
 <br/><br/>
 
-Je modifie le README afin de repush.
+Je modifie le README afin de repush
 
 # 3 things to your benefit
 
