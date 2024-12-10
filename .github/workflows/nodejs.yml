@@ -3,10 +3,13 @@ name: Node.js CI
 on:
   push:
     branches:
-      - '*'
+      - master     # Exécute tous les tests sur la branche master
+      - dev        # Exécute 'test-unit' sur la branche dev
+      - uat        # Exécute 'test-nestjs' sur la branche uat
+      - stg        # Exécute 'test-mocha' sur la branche stg
   pull_request:
     branches:
-      - master
+      - master     # Exécute tous les tests sur PRs vers master
 
 jobs:
   build:
@@ -48,6 +51,7 @@ jobs:
   test-unit:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'  # S'exécute sur 'dev' et 'master'
 
     steps:
     - uses: actions/checkout@v2
@@ -75,6 +79,7 @@ jobs:
   test-nestjs:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/uat' || github.ref == 'refs/heads/master'  # S'exécute sur 'uat' et 'master'
 
     steps:
     - uses: actions/checkout@v2
@@ -102,6 +107,7 @@ jobs:
   test-mocha:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/stg' || github.ref == 'refs/heads/master'  # S'exécute sur 'stg' et 'master'
 
     steps:
     - uses: actions/checkout@v2
